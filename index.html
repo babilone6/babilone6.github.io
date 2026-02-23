@@ -211,12 +211,18 @@ header p{color:var(--muted);font-size:.72rem;margin-top:5px;letter-spacing:2px;t
 // The bracket always contains the UPPERCASE version of the stressed letter
 // ════════════════════════════════════════
 function rA(s){
-  return s.replace(/\[([АЕЁИОУЫЭЮЯаеёиоуыэюя])\]/g, (_, v) => {
+  // сначала приводим всё слово к нижнему регистру, 
+  // потом заменяем [буква] на <em class="acc">ЗАГЛАВНАЯ</em>
+  let lower = s.toLowerCase();
+  return lower.replace(/\[([аеёиоуыэюя])\]/g, (_, v) => {
     const up = v.toUpperCase();
     return `<em class="acc">${up}</em>`;
   });
 }
-function pT(s){return s.replace(/\[([АЕЁИОУЫЭЮЯаеёиоуыэюя])\]/g,'$1');}
+function pT(s){
+  // убираем скобки, остальное оставляем как есть (для заголовка используем исходный регистр)
+  return s.replace(/\[([АЕЁИОУЫЭЮЯаеёиоуыэюя])\]/g, '$1');
+}
 
 // ════════════════════════════════════════
 // WORD DATA — all stresses verified from authoritative list
@@ -590,12 +596,15 @@ function confetti(){
 
 function renderQ(){
   answered=false;const nx=nxt();idx=nx.index;isRep=nx.rep;
-  task===1?rWord():rPA();upStats();
+  task===1?rWord():rPA();
+  upStats();
 }
 function rWord(){
   const w=WC[idx];
   const isDual=Array.isArray(w.c);
   const cArr=isDual?w.c:[w.c];
+  // Для отображения слова в вопросе используем форму без скобок, но в оригинальном регистре (с большой буквы, если нужно)
+  const displayForm = pT(cArr[0]); // первая буква остаётся заглавной (как в словаре)
   const cForm=cArr[~~(Math.random()*cArr.length)];
   const opts=shuf([{h:rA(cForm),ok:true},{h:rA(w.w),ok:false}]);
   const c=counts();
@@ -605,7 +614,7 @@ function rWord(){
     <div class="hint">Выберите правильное ударение</div>
     ${isDual?`<div class="dual-note">💡 Допустимы оба варианта ударения</div>`:''}
     ${w.note?`<div class="wnote">${w.note}</div>`:''}
-    <div class="wdisp"><span class="bword">${pT(cArr[0])}</span></div>
+    <div class="wdisp"><span class="bword">${displayForm}</span></div>
     <div class="opts">
       ${opts.map((o,i)=>`<button class="option" id="o${i}" data-ok="${o.ok}" onclick="pickW(${i},${o.ok})">${o.h}</button>`).join('')}
     </div>
@@ -637,7 +646,7 @@ function rPA(){
     ${progBar()}
     <div class="pbadge">Шаг 1 — Ударение</div>
     <div class="hint">Выберите правильное ударение в выражении</div>
-    <div class="wdisp"><span class="bword" style="font-size:clamp(1.05rem,3.2vw,1.7rem)">${pT(ph.ac)}</span></div>
+    <div class="wdisp"><span class="bword" style="font-size:clamp(1.05rem,3.2vw,1.7rem)">${ph.p}</span></div>
     <div class="opts">
       ${opts.map((o,i)=>`<button class="option" id="o${i}" data-ok="${o.ok}" style="font-size:1.05rem;line-height:2.6;padding:13px 18px" onclick="pickPA(${i},${o.ok})">${o.h}</button>`).join('')}
     </div>

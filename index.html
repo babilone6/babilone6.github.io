@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Акцентологические нормы</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f7ff;--surface:#fff;--border:#e0e7ff;
+  --accent:#6366f1;--accent2:#8b5cf6;
+  --correct:#10b981;--wrong:#ef4444;
+  --text:#1e1b4b;--muted:#64748b;
+  --new:#6366f1;--learning:#f59e0b;--mastered:#10b981;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(ellipse at 8% 8%,rgba(99,102,241,.1) 0%,transparent 45%),
+    radial-gradient(ellipse at 92% 92%,rgba(139,92,246,.07) 0%,transparent 45%);}
+.blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.28;pointer-events:none;z-index:0;animation:bfloat 9s ease-in-out infinite;}
+.b1{width:320px;height:320px;background:#c7d2fe;top:-90px;left:-90px;}
+.b2{width:240px;height:240px;background:#ddd6fe;bottom:-70px;right:-70px;animation-delay:3s;}
+.b3{width:160px;height:160px;background:#bfdbfe;top:38%;right:2%;animation-delay:6s;}
+@keyframes bfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-24px)}}
+.app{max-width:780px;margin:0 auto;padding:20px;position:relative;z-index:1;}
+header{text-align:center;padding:30px 0 16px;animation:sld .55s cubic-bezier(.34,1.56,.64,1);}
+@keyframes sld{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
+header h1{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,5vw,2.6rem);font-weight:900;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+header p{color:var(--muted);font-size:.72rem;margin-top:5px;letter-spacing:2px;text-transform:uppercase;}
+.tabs{display:flex;gap:10px;justify-content:center;margin:16px 0 0;flex-wrap:wrap;animation:fup .5s .1s both;}
+@keyframes fup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.tab{padding:10px 24px;border-radius:50px;border:2px solid var(--border);background:var(--surface);color:var(--muted);
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.76rem;cursor:pointer;transition:all .22s;text-transform:uppercase;
+  box-shadow:0 2px 12px rgba(99,102,241,.08);}
+.tab.active{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-color:transparent;box-shadow:0 4px 18px rgba(99,102,241,.32);transform:translateY(-1px);}
+.tab:hover:not(.active){border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+.sub-tabs{display:flex;gap:8px;justify-content:center;margin:10px 0 0;animation:fup .5s .15s both;}
+.sub-tab{padding:5px 18px;border-radius:50px;border:1.5px solid var(--border);background:transparent;color:var(--muted);
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:.67rem;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.sub-tab.active{background:rgba(99,102,241,.09);border-color:var(--accent);color:var(--accent);}
+.sub-tab:hover:not(.active){border-color:var(--accent);color:var(--accent);}
+.sbar{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0 18px;animation:fup .5s .2s both;}
+.sbox{background:var(--surface);border-radius:16px;padding:12px 5px;text-align:center;border:1.5px solid var(--border);
+  box-shadow:0 2px 10px rgba(99,102,241,.07);transition:transform .2s;}
+.sbox:hover{transform:translateY(-2px);}
+.sv{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;line-height:1;}
+.sv-stk{color:#f97316;}.sv-best{color:#6366f1;}.sv-new{color:#6366f1;}.sv-lrn{color:#f59e0b;}.sv-due{color:#ef4444;}
+.sl{font-size:.51rem;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;margin-top:3px;font-weight:700;}
+.prog-card{background:var(--surface);border-radius:24px;padding:26px;border:1.5px solid var(--border);
+  box-shadow:0 4px 24px rgba(99,102,241,.1);margin-bottom:14px;animation:fup .4s both;}
+.prog-card h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text);margin-bottom:14px;}
+.ptg{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px;}
+.ptb{border-radius:14px;padding:14px 8px;text-align:center;}
+.nb{background:rgba(99,102,241,.07);border:1.5px solid rgba(99,102,241,.22);}
+.lb{background:rgba(245,158,11,.07);border:1.5px solid rgba(245,158,11,.22);}
+.mb{background:rgba(16,185,129,.07);border:1.5px solid rgba(16,185,129,.22);}
+.ptc{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;line-height:1;}
+.nb .ptc{color:#6366f1;}.lb .ptc{color:#f59e0b;}.mb .ptc{color:#10b981;}
+.ptn{font-size:.57rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;font-weight:700;}
+.pbw{height:8px;background:rgba(0,0,0,.06);border-radius:10px;overflow:hidden;display:flex;}
+.pbm{background:#10b981;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.pbl{background:#f59e0b;transition:width .6s cubic-bezier(.34,1.56,.64,1) .05s;}
+.pbn{background:#6366f1;transition:width .6s cubic-bezier(.34,1.56,.64,1) .1s;}
+.leg{margin-top:16px;font-size:.7rem;color:var(--muted);line-height:2.2;}
+.leg strong{color:var(--text);}
+.quiz-card{background:var(--surface);border-radius:28px;padding:32px 26px;border:1.5px solid var(--border);
+  box-shadow:0 8px 40px rgba(99,102,241,.12);position:relative;overflow:hidden;
+  animation:cardin .5s .22s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes cardin{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.quiz-card::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(99,102,241,.07) 0%,transparent 70%);pointer-events:none;}
+.qmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.qlbl{font-size:.59rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.4px;font-weight:700;}
+.qbadge{font-size:.55rem;padding:4px 10px;border-radius:50px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;}
+.bgnew{background:rgba(99,102,241,.09);color:#6366f1;border:1.5px solid rgba(99,102,241,.28);}
+.bglrn{background:rgba(245,158,11,.09);color:#f59e0b;border:1.5px solid rgba(245,158,11,.28);}
+.bgmas{background:rgba(16,185,129,.09);color:#10b981;border:1.5px solid rgba(16,185,129,.28);}
+.bgrev{background:rgba(239,68,68,.09);color:#ef4444;border:1.5px solid rgba(239,68,68,.28);}
+.mprog{height:4px;background:rgba(0,0,0,.07);border-radius:10px;margin-bottom:20px;overflow:hidden;}
+.mfill{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:10px;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
+.wdisp{text-align:center;margin:10px 0 22px;}
+.bword{font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3.1rem);font-weight:700;color:var(--text);display:inline-block;
+  animation:wpop .38s cubic-bezier(.34,1.56,.64,1);}
+@keyframes wpop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+.hint{text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:16px;font-style:italic;font-weight:600;}
+.dual-note{text-align:center;font-size:.69rem;color:#6366f1;background:rgba(99,102,241,.07);
+  border-radius:10px;padding:5px 12px;margin:-8px 0 12px;font-weight:800;border:1px solid rgba(99,102,241,.18);}
+.wnote{text-align:center;font-size:.69rem;color:var(--muted);background:rgba(0,0,0,.04);
+  border-radius:8px;padding:4px 10px;margin:-8px 0 10px;font-weight:600;}
+
+/* ════════════════════════════════════════
+   ACCENT RENDERING
+   [В] → <em class="acc">В</em>
+   uppercase stressed vowel + accent mark above
+   ════════════════════════════════════════ */
+.acc{
+  font-style:normal;
+  display:inline-block;
+  position:relative;
+  color:#6366f1;
+  font-variant:normal;
+}
+.acc::after{
+  content:'́';
+  position:absolute;
+  top:-.22em;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:.66em;
+  line-height:1;
+  pointer-events:none;
+  color:inherit;
+}
+.option .acc{color:inherit;}
+.option .acc::after{color:inherit;}
+
+.opts{display:flex;flex-direction:column;gap:11px;}
+.option{background:var(--bg);border:2px solid var(--border);border-radius:16px;
+  padding:15px 20px;font-size:1.42rem;font-family:'Playfair Display',serif;
+  font-weight:600;color:var(--text);cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);text-align:center;line-height:2.5;}
+.option:hover:not(.disabled){border-color:#6366f1;transform:translateY(-3px) scale(1.01);
+  box-shadow:0 6px 20px rgba(99,102,241,.18);color:#6366f1;}
+.option.correct{border-color:#10b981!important;background:rgba(16,185,129,.07)!important;color:#10b981!important;
+  animation:cpop .38s cubic-bezier(.34,1.56,.64,1);}
+@keyframes cpop{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.option.wrong{border-color:#ef4444!important;background:rgba(239,68,68,.06)!important;color:#ef4444!important;
+  animation:shake .36s cubic-bezier(.36,.07,.19,.97);}
+@keyframes shake{10%,90%{transform:translateX(-3px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-5px)}40%,60%{transform:translateX(5px)}}
+.option.disabled{cursor:default;transform:none!important;}
+.optm{font-family:'Nunito',sans-serif;font-size:.86rem;text-align:left;padding:13px 17px;line-height:1.6;font-weight:600;}
+.fb{text-align:center;margin-top:13px;font-size:.86rem;font-weight:700;min-height:18px;opacity:0;transition:opacity .28s;border-radius:10px;padding:7px 14px;}
+.fb.show{opacity:1;}
+.cfb{color:#10b981;background:rgba(16,185,129,.07);}
+.wfb{color:#ef4444;background:rgba(239,68,68,.06);}
+.nbtn{display:block;margin:16px auto 0;padding:13px 36px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;
+  border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;text-transform:uppercase;
+  cursor:pointer;transition:all .22s;opacity:0;pointer-events:none;box-shadow:0 4px 16px rgba(99,102,241,.26);}
+.nbtn.show{opacity:1;pointer-events:all;animation:btnp .38s cubic-bezier(.34,1.56,.64,1);}
+@keyframes btnp{from{opacity:0;transform:scale(.84)}to{opacity:1;transform:scale(1)}}
+.nbtn:hover{transform:scale(1.05);box-shadow:0 8px 26px rgba(99,102,241,.4);}
+.pbadge{display:inline-block;background:linear-gradient(135deg,rgba(99,102,241,.09),rgba(139,92,246,.09));
+  border:1.5px solid rgba(99,102,241,.2);color:#6366f1;font-size:.58rem;letter-spacing:1.4px;
+  text-transform:uppercase;padding:4px 12px;border-radius:50px;margin-bottom:11px;font-weight:800;}
+.cfwrap{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;}
+.cp{position:absolute;border-radius:2px;animation:cfall 1.3s ease-in forwards;}
+@keyframes cfall{0%{opacity:1;transform:translateY(-10px) rotate(0deg)}100%{opacity:0;transform:translateY(105vh) rotate(740deg) scale(.4)}}
+@keyframes spop{0%{transform:scale(1)}45%{transform:scale(1.5)}75%{transform:scale(.9)}100%{transform:scale(1)}}
+.spop{animation:spop .4s cubic-bezier(.34,1.56,.64,1);}
+@media(max-width:520px){
+  .sbar{grid-template-columns:repeat(3,1fr);}
+  .sbox:nth-child(4),.sbox:nth-child(5){display:none;}
+  .option{font-size:1.08rem;padding:12px 13px;}
+  .bword{font-size:clamp(1.5rem,7vw,2.2rem);}
+  .quiz-card{padding:20px 14px;}
+}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div class="cfwrap" id="cfw"></div>
+<div class="app">
+  <header>
+    <h1>Акцентологические нормы</h1>
+    <p>Словарь Ивановой · Интервальное повторение · ♾️</p>
+  </header>
+  <div class="tabs">
+    <button class="tab active" id="tab1" onclick="switchTask(1)">Задание 1 — Слова</button>
+    <button class="tab" id="tab2" onclick="switchTask(2)">Задание 2 — Выражения</button>
+  </div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" id="sq" onclick="showView('quiz')">Тренажёр</button>
+    <button class="sub-tab" id="sp" onclick="showView('progress')">Прогресс</button>
+  </div>
+  <div class="sbar">
+    <div class="sbox"><div class="sv sv-stk" id="vstk">0</div><div class="sl">🔥 Стрик</div></div>
+    <div class="sbox"><div class="sv sv-best" id="vbst">0</div><div class="sl">🏆 Рекорд</div></div>
+    <div class="sbox"><div class="sv sv-new" id="vnew">—</div><div class="sl">🆕 Новых</div></div>
+    <div class="sbox"><div class="sv sv-lrn" id="vlrn">—</div><div class="sl">📖 Закреп.</div></div>
+    <div class="sbox"><div class="sv sv-due" id="vdue">—</div><div class="sl">🔁 Повтор</div></div>
+  </div>
+  <div id="vp" style="display:none">
+    <div class="prog-card">
+      <h3>📊 Таблица прогресса</h3>
+      <div class="ptg">
+        <div class="ptb nb"><div class="ptc" id="ptn">0</div><div class="ptn">Новые</div></div>
+        <div class="ptb lb"><div class="ptc" id="ptl">0</div><div class="ptn">Изучение</div></div>
+        <div class="ptb mb"><div class="ptc" id="ptm">0</div><div class="ptn">Выучены</div></div>
+      </div>
+      <div class="pbw">
+        <div class="pbm" id="pbm" style="width:0%"></div>
+        <div class="pbl" id="pbl" style="width:0%"></div>
+        <div class="pbn" id="pbn" style="width:100%"></div>
+      </div>
+      <div class="leg">
+        <strong>Как работает система:</strong><br>
+        🆕 <span style="color:#6366f1">Новое</span> — ещё не видел это слово<br>
+        📖 <span style="color:#f59e0b">Изучение (1–3/4)</span> — повторы через 3 → 7 → 15 ответов<br>
+        ✅ <span style="color:#10b981">Выучено</span> — 4 верных ответа на всех интервалах<br>
+        ❌ Ошибка → прогресс сбрасывается, повтор через 3 ответа<br>
+        💡 Два варианта ударения — оба считаются правильными!
+      </div>
+    </div>
+  </div>
+  <div id="vq"><div class="quiz-card"><div id="qc"></div></div></div>
+</div>
+<script>
+// ════════════════════════════════════════
+// ACCENT RENDERING
+// [В] → <em class="acc">В</em>  (В = uppercase stressed vowel)
+// The bracket always contains the UPPERCASE version of the stressed letter
+// ════════════════════════════════════════
+function rA(s){
+  return s.replace(/\[([АЕЁИОУЫЭЮЯаеёиоуыэюя])\]/g, (_, v) => {
+    const up = v.toUpperCase();
+    return `<em class="acc">${up}</em>`;
+  });
+}
+function pT(s){return s.replace(/\[([АЕЁИОУЫЭЮЯаеёиоуыэюя])\]/g,'$1');}
+
+// ════════════════════════════════════════
+// WORD DATA — all stresses verified from authoritative list
+// c = correct form(s), w = distractor
+// stressed vowel in [brackets] — UPPERCASE in display
+// ════════════════════════════════════════
+const WORDS=[
+// ─── СПИСОК 1 ───
+{c:"[А]вгустовский",       w:"Август[О]вский"},
+{c:"Агрон[О]мия",          w:"Агроном[И]я"},
+{c:"Алког[О]ль",           w:"[А]лкоголь"},
+{c:"Без[У]держный",        w:"Безуд[Е]ржный"},
+{c:"Валов[О]й",            w:"В[А]ловый"},
+{c:"Вероиспов[Е]дание",    w:"Вероисповед[А]ние"},
+{c:"Гастрон[О]мия",        w:"Гастроном[И]я"},
+{c:"Гегем[О]ния",          w:"Гегемон[И]я"},
+{c:"Давн[И]шний",          w:"Д[А]внишний"},
+{c:"Диал[О]г",             w:"Д[И]алог"},
+{c:"Диспанс[Е]р",          w:"Дисп[А]нсер"},
+{c:"Зав[И]дно",            w:"З[А]видно"},
+{c:"Зак[У]порить",         w:"Закуп[О]рить"},
+{c:"Запломбиров[А]ть",     w:"Запломб[И]ровать"},
+{c:"[И]здавна",            w:"Изд[А]вна"},
+{c:"К[А]мбала",            w:"Камб[А]ла"},
+{c:"Катал[О]г",            w:"К[А]талог"},
+{c:"Кварт[А]л",            w:"Кв[А]ртал"},
+{c:"Ман[Е]вры",            w:"М[А]невры"},
+// маркетинг — два ударения: ма́рке́тинг
+{c:["М[А]ркетинг","Марк[Е]тинг"], w:"Маркетин[Г]у", dual:true},
+{c:"Мастерск[И]",          w:"М[А]стерски"},
+{c:"Н[А]бело",             w:"Набел[О]"},
+{c:"Обесп[Е]чение",        w:"Обеспечен[И]е"},
+{c:"Облегч[И]ть",          w:"Обл[Е]гчить"},
+{c:"Обостр[И]ть",          w:"Об[О]стрить"},
+{c:"Парт[Е]р",             w:"П[А]ртер"},
+{c:"П[А]хота",             w:"Пах[О]та"},
+{c:"Пепел[И]ще",           w:"П[Е]пелище"},
+{c:"Пл[Е]сневеть",         w:"Плеснев[Е]ть"},
+{c:"Побас[Ё]нка",          w:"Поб[А]сенка"},
+{c:"Простын[Я]",           w:"Пр[О]стыня"},
+{c:"Св[Ё]кла",             w:"Свекл[А]"},
+{c:"С[И]лос",              w:"Сил[О]с"},
+{c:"Симм[Е]трия",          w:"Симметр[И]я"},
+{c:"Там[О]жня",            w:"Т[А]можня"},
+{c:"Танц[О]вщица",         w:"Танцовщ[И]ца"},
+{c:"Ум[Е]рший",            w:"[У]мерший"},
+{c:"Упрочн[Е]ние",         w:"Упр[О]чнение"},
+{c:"Факс[И]миле",          w:"Факсим[И]ле"},
+{c:"Фарф[О]р",             w:"Ф[А]рфор"},
+{c:"Ход[А]тайствовать",    w:"Ходатайствов[А]ть"},
+{c:"Цем[Е]нт",             w:"Ц[Е]мент"},
+{c:"Ч[Е]рпать",            w:"Черп[А]ть"},
+{c:"Щав[Е]ль",             w:"Щ[А]вель"},
+{c:"Эксп[Е]рт",            w:"[Э]ксперт"},
+{c:"Юр[О]дивый",           w:"Юрод[И]вый"},
+{c:"Духовн[И]к",           w:"Д[У]ховник"},
+{c:"Т[А]йная в[Е]черя",    w:"Т[А]йная вечер[Я]"},
+// ─── СПИСОК 2 ───
+{c:"Алфав[И]т",            w:"[А]лфавит"},
+{c:"Асб[Е]ст",             w:"[А]сбест"},
+{c:"Быти[Е]",              w:"Б[Ы]тие"},
+{c:"Гл[И]ссер",            w:"Глисс[Е]р"},
+{c:"Догов[О]р",            w:"Д[О]говор"},
+{c:"Дон[Е]льзя",           w:"Донельз[Я]"},
+{c:"Дрем[О]та",            w:"Др[Ё]мота"},
+{c:"Ерет[И]к",             w:"[Е]ретик"},
+{c:"Жест[О]ко",            w:"Жёстк[О]"},
+{c:"Заржав[Е]ть",          w:"Зарж[А]веть"},
+{c:"Жалюз[И]",             w:"Ж[А]люзи"},
+{c:"Зим[О]вщик",           w:"З[И]мовщик"},
+{c:"Зубч[А]тый",           w:"З[У]бчатый"},
+{c:"[И]зредка",            w:"Изр[Е]дка"},
+{c:"Исч[Е]рпать",          w:"Исчерп[А]ть"},
+{c:"Кедр[О]вый",           w:"К[Е]дровый"},
+{c:"Кож[У]х",              w:"К[О]жух"},
+{c:"Кокл[Ю]ш",             w:"К[О]клюш"},
+{c:"Комб[А]йнер",          w:"Комбайн[Е]р"},
+{c:"Крем[Е]нь",            w:"Кр[Е]мень"},
+{c:"Кулинар[И]я",          w:"Кулин[А]рия"},
+{c:"Мыт[А]рство",          w:"М[Ы]тарство"},
+{c:"Новорожд[Ё]нный",      w:"Новор[О]жденный"},
+{c:"Опер[И]ться",          w:"Опер[И]ться"},
+{c:"Опт[О]вый",            w:"[О]птовый"},
+{c:"Осведомл[Ё]нный",      w:"Освед[О]мленный"},
+{c:"П[О]хороны",           w:"Похорон[Ы]"},
+{c:"Похорон[А]х",          w:"П[О]хоронах"},
+{c:"Прид[А]ное",           w:"Пр[И]даное"},
+{c:"Приноровл[Ё]нный",     w:"Принор[О]вленный"},
+{c:"Прин[У]дить",          w:"Принуд[И]ть"},
+{c:"Приобрет[Е]ние",       w:"Приобретен[И]е"},
+{c:"Псевдон[И]м",          w:"Пс[Е]вдоним"},
+{c:"Ржав[Е]ть",            w:"Рж[А]веть"},
+{c:"Издан[А]",             w:"[И]здана"},
+{c:"Отключен[А]",          w:"Отключ[Е]на"},
+{c:"Отключ[Ё]н",           w:"Отключ[Е]н"},
+{c:"Мин[У]ть",             w:"М[И]нуть"},
+{c:"Д[И]скурс",            w:"Диск[У]рс"},
+{c:"Включ[И]м",            w:"Вкл[Ю]чим"},
+{c:"Аэроп[О]ртов",         w:"Аэропорт[О]в"},
+{c:"С[О]лят",              w:"Сол[Я]т"},
+{c:"Сор[Я]т",              w:"С[О]рят"},
+{c:"Ред[А]кторов",         w:"Редактор[О]в"},
+{c:"Собол[Е]знование",     w:"Соболезнов[А]ние"},
+{c:"Соз[Ы]в",              w:"С[О]зыв"},
+{c:"Сосредот[О]чение",     w:"Сосредоточ[Е]ние"},
+{c:"Т[Е]плиться",          w:"Тепл[И]ться"},
+{c:"Усугуб[И]ть",          w:"Ус[У]губить"},
+{c:"Фен[О]мен",            w:"Феном[Е]н"},
+{c:"Филател[И]я",          w:"Филат[Е]лия"},
+// холёный — х[О]л[Ё]ный — два ударных слога!
+{c:"Х[О]л[Ё]ный",         w:"Х[О]леный"},
+{c:"Щегольск[И]",          w:"Щег[О]льски"},
+{c:"Щелочн[О]й",           w:"Щел[О]чной"},
+{c:"Эп[И]граф",            w:"[Э]пиграф"},
+{c:"[Ю]рта",               w:"Юрт[А]"},
+{c:"Языков[О]й",           w:"Язык[О]вой",    note:"(словесное выражение)"},
+{c:"Язык[О]вый",           w:"Языков[О]й",    note:"(орган в полости рта)"},
+{c:"Бл[А]говест",          w:"Благов[Е]ст"},
+{c:"Посл[У]шник",          w:"Послушн[И]к"},
+{c:"Вит[И]я",              w:"Вити[Я]"},
+{c:"Пос[У]лы",             w:"П[О]сулы"},
+{c:"Герб[Ы]",              w:"Г[Е]рбы"},
+{c:"Мин[У]т",              w:"М[И]нут"},
+{c:"Д[И]скурс",            w:"Диск[У]рс"},
+// ─── СПИСОК 3 ───
+{c:"Автон[И]м",            w:"Авт[О]ним"},
+{c:"Аг[Е]нт",              w:"[А]гент"},
+{c:"Арг[О]",               w:"[А]рго"},
+{c:"Балов[А]ть",           w:"Б[А]ловать"},
+{c:"Б[А]ржа",              w:"Барж[А]"},
+{c:"Бл[Ю]да",              w:"Блюд[А]"},
+{c:"Ва[Я]тель",            w:"В[А]ятель"},
+{c:"Г[Е]незис",            w:"Ген[Е]зис"},
+// гренки — гр[Е]нк[И] — два варианта ударения!
+{c:["Гр[Е]нки","Гренк[И]"], w:"Гр[Е]нков", dual:true},
+{c:"Деф[И]с",              w:"Д[Е]фис"},
+{c:"Дозвон[И]ться",        w:"Д[О]звониться"},
+{c:"Зад[О]лго",            w:"З[А]долго"},
+{c:"Зан[Я]вший",           w:"З[А]нявший"},
+{c:"Запломбир[О]ванный",   w:"Запломб[И]рованный"},
+{c:"Звон[И]т",             w:"Зв[О]нит"},
+{c:"Избал[О]ванный",       w:"Изб[А]лованный"},
+{c:"Крем[И]рованный",      w:"Кремир[О]ванный"},
+{c:"Индустр[И]я",          w:"Инд[У]стрия"},
+{c:"Искр[И]ться",          w:"[И]скриться"},
+{c:"Кауч[У]к",             w:"К[А]учук"},
+{c:"Кит[О]вый ус",         w:"К[И]товый ус"},
+{c:"Стат[У]т",             w:"Ст[А]тут"},
+{c:"Опрост[И]ть",          w:"Упр[О]стить"},
+{c:"Отч[А]сти",            w:"[О]тчасти"},
+// петля — п[Е]тл[Я] — два ударных слога!
+{c:["П[Е]тля","Петл[Я]"],  w:"Петл[Е]й", dual:true},
+{c:"Принял[А]сь",          w:"Прин[Я]лась"},
+{c:"Премир[О]ванный",      w:"Прем[И]рованный"},
+{c:"Пригов[О]р",           w:"Пр[И]говор"},
+{c:"Подростк[О]вый",       w:"П[О]дростковый"},
+{c:"Полтор[А]",            w:"П[О]лтора"},
+{c:"Симм[Е]трия",          w:"Симметр[И]я"},
+{c:"Синхрон[И]я",          w:"Синхр[О]ния"},
+{c:"Созвон[И]мся",         w:"Созв[О]нимся"},
+{c:"Ст[А]туя",             w:"Стату[Я]"},
+{c:"Ср[Е]дство",           w:"Средств[О]"},
+{c:"Стол[Я]р",             w:"Ст[О]ляр"},
+{c:"Таб[У]",               w:"Т[А]бу"},
+// творог — тв[О]р[О]г — два ударных слога!
+{c:["Тв[О]рог","Твор[О]г"], w:"Твор[О]жный", dual:true},
+// тефтели — т[Е]фт[Е]ли — два варианта!
+{c:["Т[Е]фтели","Тефт[Е]ли"], w:"Тефтел[И]", dual:true},
+{c:"Фрез[А]",              w:"Фр[Е]за"},
+{c:"Х[А]нжество",          w:"Ханж[Е]ство"},
+{c:"Хв[О]я",               w:"Хво[Я]"},
+{c:"Христиан[И]н",         w:"Христи[А]нин"},
+{c:"Ход[А]тайство",        w:"Ходатайств[О]"},
+{c:"Шоф[Ё]р",              w:"Ш[О]фер"},
+{c:"Гам[А]ши",             w:"Г[А]маши"},
+{c:"Апостр[О]ф",           w:"[А]построф"},
+// мельком — м[Е]льк[О]м — два ударных слога!
+{c:["М[Е]льком","Мельк[О]м"], w:"Мелком[У]", dual:true},
+{c:"Прин[У]дишь",          w:"Принуд[И]шь"},
+{c:"Кл[А]ла",              w:"Клал[А]"},
+{c:"Рвал[А]",              w:"Рв[А]ла"},
+{c:"Лгал[А]",              w:"Лг[А]ла"},
+{c:"Притв[О]рит",          w:"Притвор[И]т"},
+{c:"Отключ[А]т",           w:"Откл[Ю]чат"},
+{c:"Прин[Я]ть",            w:"Пр[И]нять"},
+{c:"Прин[Я]вши",           w:"Пр[И]явши"},
+];
+
+const VR=/\[[АЕЁИОУЫЭЮЯаеёиоуыэюя]\]/;
+const WC=WORDS.filter(w=>{
+  const cs=Array.isArray(w.c)?w.c:[w.c];
+  return cs.some(s=>VR.test(s))&&VR.test(w.w)&&
+    !(Array.isArray(w.c)?false:(pT(w.c)===pT(w.w)));
+});
+
+const PHRASES=[
+{p:"Бряцать оружием",
+ ac:"Бряц[А]ть оружием",aw:"Бр[Я]цать оружием",
+ mc:"Угрожать войной, демонстрировать военную силу с целью запугивания",
+ mw1:"Носить оружие при себе и открыто его демонстрировать",
+ mw2:"Хвастаться военными победами и боевыми наградами"},
+{p:"Недрёманное oko",
+ ac:"Недрем[А]нное [О]ко",aw:"Недр[Ё]манное [О]ко",
+ mc:"Неусыпный надзор; бдительный страж, не смыкающий глаз",
+ mw1:"Больной, постоянно воспалённый глаз при хронической болезни",
+ mw2:"Третий глаз — символ мудрости и всевидения"},
+{p:"Земля обетованная",
+ ac:"Земля обетов[А]нная",aw:"Земля обет[О]ванная",
+ mc:"Желанное место, заветная мечта; обещанный рай, о котором мечтали",
+ mw1:"Земля, полученная по завещанию или в наследство",
+ mw2:"Чужбина, далёкая незнакомая страна"},
+{p:"Подсадная утка",
+ ac:"Подсадн[А]я утка",aw:"Подс[А]дная утка",
+ mc:"Человек, тайно подосланный для провокации, слежки или доносительства",
+ mw1:"Прирученная утка, используемая охотниками как живая приманка",
+ mw2:"Подставной свидетель или фиктивный участник мероприятия"},
+{p:"Семи пядей во лбу",
+ ac:"Сем[И] пяд[Е]й во лб[У]",aw:"С[Е]ми пядей во лбу",
+ mc:"Очень умный человек, выдающегося интеллекта",
+ mw1:"Человек с необычно высоким и широким лбом",
+ mw2:"Хитрый и пронырливый человек, знающий всё наперёд"},
+{p:"Колосс на глиняных ногах",
+ ac:"Кол[О]сс на гл[И]няных ногах",aw:"Кол[О]сс на глин[Я]ных ногах",
+ mc:"Нечто внешне величественное, но внутренне ненадёжное и непрочное",
+ mw1:"Огромная глиняная статуя из древних библейских преданий",
+ mw2:"Строение, возведённое на ненадёжном фундаменте"},
+{p:"Гол как сокол",
+ ac:"Гол как сок[О]л",aw:"Г[О]л как сокол",
+ mc:"Абсолютно нищий, не имеющий никакого имущества",
+ mw1:"Быстрый и стремительный, подобный хищной птице",
+ mw2:"Одинокий, без семьи и близких людей"},
+{p:"Без году неделя",
+ ac:"Б[Е]з году нед[Е]ля",aw:"Без год[У] неделя",
+ mc:"Совсем недавно, очень мало времени (о стаже или опыте)",
+ mw1:"Ровно семь дней, строго один календарный период",
+ mw2:"Неопределённо долгий и бесплодный срок ожидания"},
+{p:"Как с гуся вода",
+ ac:"Как с г[У]ся вода",aw:"Как с гус[Я] вода",
+ mc:"Всё нипочём, ничто не действует на человека, всё ему безразлично",
+ mw1:"Быстро и легко избавиться от чего-то нежелательного",
+ mw2:"Делать что-то очень легко, без видимых усилий"},
+{p:"На сто вёрст кругом",
+ ac:"На сто вёрст круг[О]м",aw:"На сто вёрст кр[У]гом",
+ mc:"На большом расстоянии вокруг; в широкой округе; повсюду поблизости",
+ mw1:"Ровно сто километров в каждую сторону от данной точки",
+ mw2:"Очень далеко отсюда, в совершенно другом месте"},
+{p:"Час от часу не легче",
+ ac:"Час [О]т часу не легче",aw:"Час от час[У] не легче",
+ mc:"С каждым часом становится всё хуже, положение неуклонно ухудшается",
+ mw1:"Время идёт, а ничего не меняется, ситуация стоит на месте",
+ mw2:"Трудности непрерывно сменяют одна другую без передышки"},
+{p:"При пиковом интересе",
+ ac:"При п[И]ковом интересе",aw:"При пик[О]вом интересе",
+ mc:"В разговорном значении: в неловком, безвыходном положении",
+ mw1:"В момент наибольшего и острого интереса к чему-либо",
+ mw2:"Имея острый коммерческий или финансовый интерес"},
+{p:"По миру ходить",
+ ac:"П[О] миру ходить",aw:"По мир[У] ходить",
+ mc:"Нищенствовать, ходить по людям и просить подаяния",
+ mw1:"Много путешествовать по всему свету, объезжать страны",
+ mw2:"Разносить слухи и сплетни по знакомым и соседям"},
+{p:"На миру и смерть красна",
+ ac:"На мир[У] и смерть красн[А]",aw:"На м[И]ру и смерть красна",
+ mc:"На людях всё переносится легче — даже гибель не так страшна",
+ mw1:"Красиво умереть можно только на поле боя с врагом",
+ mw2:"Смерть знаменитого человека делает его ещё более прославленным"},
+{p:"Не ровён час",
+ ac:"Не ров[Ё]н час",aw:"Не р[О]вен час",
+ mc:"Может вдруг случиться непредвиденная беда; мало ли что произойдёт",
+ mw1:"Скоро наступит удобный момент для действия",
+ mw2:"Времени мало, нужно срочно торопиться"},
+{p:"Тёмна вода во облацех",
+ ac:"Темн[А] вода во облац[Е]х",aw:"Тёмна вод[А] во облацех",
+ mc:"Нечто совершенно непонятное, тёмное и необъяснимое для посторонних",
+ mw1:"Гроза надвигается из тёмных туч — плохой погодный знак",
+ mw2:"Мрачный прогноз на будущее, дурные предзнаменования"},
+{p:"Из огня да в полымя",
+ ac:"Из огня да в п[О]лымя",aw:"Из огня да в полым[Я]",
+ mc:"Из одной беды попасть в другую, ещё большую",
+ mw1:"Бесстрашно броситься навстречу любой опасности",
+ mw2:"Действовать импульсивно, не думая о последствиях"},
+];
+
+// ── SRS ──
+const SRS=[3,7,15,30];
+let task=1,view='quiz',streak=0,best=0;
+let srs={},queue=[],qpos=0,cnt=0,pending=[];
+let answered=false,accentOk=false,idx=-1,isRep=false;
+
+const K=i=>`t${task}|${i}`;
+function St(i){const k=K(i);if(!srs[k])srs[k]={s:'new',c:0};return srs[k];}
+function save(){try{localStorage.setItem('aq9',JSON.stringify(srs));localStorage.setItem('aq9b',best);}catch(e){}}
+function load(){try{const d=localStorage.getItem('aq9');if(d)srs=JSON.parse(d);best=+(localStorage.getItem('aq9b')||0);}catch(e){}}
+function data(){return task===1?WC:PHRASES;}
+function shuf(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function buildQ(){const n=data().length;queue=shuf([...Array(n)].map((_,i)=>i));qpos=0;cnt=0;pending=[];}
+function nxt(){
+  const due=pending.filter(p=>cnt>=p.d);
+  if(due.length){due.sort((a,b)=>a.d-b.d);const it=due[0];pending=pending.filter(p=>p!==it);return{index:it.i,rep:true};}
+  if(qpos>=queue.length){queue=shuf([...Array(data().length)].map((_,i)=>i));qpos=0;}
+  return{index:queue[qpos++],rep:false};
+}
+function hit(i){
+  cnt++;const st=St(i);
+  if(st.s==='new'){st.s='learning';st.c=1;}
+  else if(st.s==='learning'){st.c++;if(st.c>=4)st.s='mastered';else pending.push({i,d:cnt+SRS[Math.min(st.c-1,3)]});}
+  else pending.push({i,d:cnt+50});
+  save();
+}
+function miss(i){const st=St(i);st.c=0;if(st.s!=='new')st.s='learning';pending.push({i,d:cnt+3});streak=0;save();}
+function counts(){const d=data();let n=0,l=0,m=0;d.forEach((_,i)=>{const s=St(i).s;s==='mastered'?m++:s==='learning'?l++:n++;});return{n,l,m,t:d.length};}
+function dueN(){return pending.filter(p=>cnt>=p.d).length;}
+
+function upStats(){
+  const c=counts();
+  document.getElementById('vstk').textContent=streak;
+  document.getElementById('vbst').textContent=best;
+  document.getElementById('vnew').textContent=c.n;
+  document.getElementById('vlrn').textContent=c.l;
+  document.getElementById('vdue').textContent=dueN();
+}
+function upProg(){
+  const c=counts();
+  document.getElementById('ptn').textContent=c.n;
+  document.getElementById('ptl').textContent=c.l;
+  document.getElementById('ptm').textContent=c.m;
+  const t=c.t||1;
+  document.getElementById('pbm').style.width=(c.m/t*100)+'%';
+  document.getElementById('pbl').style.width=(c.l/t*100)+'%';
+  document.getElementById('pbn').style.width=(c.n/t*100)+'%';
+}
+function showView(v){
+  view=v;
+  document.getElementById('sq').classList.toggle('active',v==='quiz');
+  document.getElementById('sp').classList.toggle('active',v==='progress');
+  document.getElementById('vq').style.display=v==='quiz'?'':'none';
+  document.getElementById('vp').style.display=v==='progress'?'':'none';
+  if(v==='progress')upProg();
+  if(v==='quiz')renderQ();
+}
+function switchTask(n){
+  task=n;
+  document.getElementById('tab1').classList.toggle('active',n===1);
+  document.getElementById('tab2').classList.toggle('active',n===2);
+  streak=0;buildQ();upStats();
+  if(view==='quiz')renderQ();else upProg();
+}
+function badge(i,rep){
+  if(rep)return`<span class="qbadge bgrev">🔁 Повтор</span>`;
+  const st=St(i);
+  if(st.s==='mastered')return`<span class="qbadge bgmas">✅ Выучено</span>`;
+  if(st.s==='learning')return`<span class="qbadge bglrn">📖 ${st.c}/4</span>`;
+  return`<span class="qbadge bgnew">🆕 Новое</span>`;
+}
+function progBar(){
+  const c=counts();
+  return`<div class="mprog"><div class="mfill" style="width:${Math.round(c.m/c.t*100)}%"></div></div>`;
+}
+function confetti(){
+  const wrap=document.getElementById('cfw');
+  const colors=['#6366f1','#8b5cf6','#10b981','#f59e0b','#ec4899','#3b82f6'];
+  for(let i=0;i<28;i++){
+    const el=document.createElement('div');
+    el.className='cp';
+    el.style.cssText=`left:${20+Math.random()*60}%;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;
+      background:${colors[~~(Math.random()*colors.length)]};animation-delay:${Math.random()*.5}s;animation-duration:${1+Math.random()*.6}s;`;
+    wrap.appendChild(el);
+    setTimeout(()=>el.remove(),2000);
+  }
+}
+
+function renderQ(){
+  answered=false;const nx=nxt();idx=nx.index;isRep=nx.rep;
+  task===1?rWord():rPA();upStats();
+}
+function rWord(){
+  const w=WC[idx];
+  const isDual=Array.isArray(w.c);
+  const cArr=isDual?w.c:[w.c];
+  const cForm=cArr[~~(Math.random()*cArr.length)];
+  const opts=shuf([{h:rA(cForm),ok:true},{h:rA(w.w),ok:false}]);
+  const c=counts();
+  document.getElementById('qc').innerHTML=`
+    <div class="qmeta"><span class="qlbl">${c.m}/${c.t} выучено</span>${badge(idx,isRep)}</div>
+    ${progBar()}
+    <div class="hint">Выберите правильное ударение</div>
+    ${isDual?`<div class="dual-note">💡 Допустимы оба варианта ударения</div>`:''}
+    ${w.note?`<div class="wnote">${w.note}</div>`:''}
+    <div class="wdisp"><span class="bword">${pT(cArr[0])}</span></div>
+    <div class="opts">
+      ${opts.map((o,i)=>`<button class="option" id="o${i}" data-ok="${o.ok}" onclick="pickW(${i},${o.ok})">${o.h}</button>`).join('')}
+    </div>
+    <div class="fb" id="fb"></div>
+    <button class="nbtn" id="nb" onclick="renderQ()">Следующее →</button>`;
+}
+function pickW(i,ok){
+  if(answered)return;answered=true;
+  document.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  document.querySelectorAll('.option').forEach(o=>{if(o.dataset.ok==='true')o.classList.add('correct');});
+  const fb=document.getElementById('fb');
+  if(ok){
+    hit(idx);streak++;if(streak>best){best=streak;save();}
+    fb.textContent='✓ Правильно!';fb.className='fb show cfb';
+    pulse();if(streak%5===0)confetti();
+  }else{
+    document.getElementById('o'+i).classList.add('wrong');
+    miss(idx);
+    fb.textContent='✗ Неверно. Правильный ответ выделен. Повтор через 3 ответа.';fb.className='fb show wfb';
+  }
+  upStats();document.getElementById('nb').classList.add('show');
+}
+function rPA(){
+  const ph=PHRASES[idx];
+  const opts=shuf([{h:rA(ph.ac),ok:true},{h:rA(ph.aw),ok:false}]);
+  const c=counts();
+  document.getElementById('qc').innerHTML=`
+    <div class="qmeta"><span class="qlbl">${c.m}/${c.t} выучено</span>${badge(idx,isRep)}</div>
+    ${progBar()}
+    <div class="pbadge">Шаг 1 — Ударение</div>
+    <div class="hint">Выберите правильное ударение в выражении</div>
+    <div class="wdisp"><span class="bword" style="font-size:clamp(1.05rem,3.2vw,1.7rem)">${pT(ph.ac)}</span></div>
+    <div class="opts">
+      ${opts.map((o,i)=>`<button class="option" id="o${i}" data-ok="${o.ok}" style="font-size:1.05rem;line-height:2.6;padding:13px 18px" onclick="pickPA(${i},${o.ok})">${o.h}</button>`).join('')}
+    </div>
+    <div class="fb" id="fb"></div>
+    <button class="nbtn" id="nb" onclick="rPM()">К значению →</button>`;
+}
+function pickPA(i,ok){
+  if(answered)return;answered=true;accentOk=ok;
+  document.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  document.querySelectorAll('.option').forEach(o=>{if(o.dataset.ok==='true')o.classList.add('correct');});
+  const fb=document.getElementById('fb');
+  if(!ok){document.getElementById('o'+i).classList.add('wrong');streak=0;fb.textContent='✗ Неверно. Правильное ударение выделено.';fb.className='fb show wfb';}
+  else{fb.textContent='✓ Правильно! Теперь определите значение.';fb.className='fb show cfb';}
+  upStats();document.getElementById('nb').classList.add('show');
+}
+function rPM(){
+  const ph=PHRASES[idx];
+  const opts=shuf([{t:ph.mc,ok:true},{t:ph.mw1,ok:false},{t:ph.mw2,ok:false}]);
+  answered=false;
+  document.getElementById('qc').innerHTML=`
+    <div class="pbadge">Шаг 2 — Значение</div>
+    <div class="hint">Что означает выражение:</div>
+    <div class="wdisp" style="margin-bottom:14px"><span class="bword" style="font-size:clamp(1.1rem,2.8vw,1.65rem)">${ph.p}</span></div>
+    <div class="opts">
+      ${opts.map((o,i)=>`<button class="option optm" id="o${i}" data-ok="${o.ok}" onclick="pickPM(${i},${o.ok})">${o.t}</button>`).join('')}
+    </div>
+    <div class="fb" id="fb"></div>
+    <button class="nbtn" id="nb" onclick="renderQ()">Следующее →</button>`;
+}
+function pickPM(i,ok){
+  if(answered)return;answered=true;
+  document.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+  document.querySelectorAll('.option').forEach(o=>{if(o.dataset.ok==='true')o.classList.add('correct');});
+  const fb=document.getElementById('fb');
+  if(ok&&accentOk){
+    hit(idx);streak++;if(streak>best){best=streak;save();}
+    fb.textContent='✓ Верно! И ударение, и значение правильные.';fb.className='fb show cfb';
+    pulse();if(streak%5===0)confetti();
+  }else if(ok){
+    fb.textContent='✓ Значение верно, но ударение было ошибочным.';fb.className='fb show cfb';
+  }else{
+    document.getElementById('o'+i).classList.add('wrong');miss(idx);
+    fb.textContent='✗ Неверно. Правильное значение выделено.';fb.className='fb show wfb';
+  }
+  upStats();document.getElementById('nb').classList.add('show');
+}
+function pulse(){
+  const el=document.getElementById('vstk');
+  el.classList.remove('spop');void el.offsetWidth;el.classList.add('spop');
+}
+load();buildQ();upStats();renderQ();
+</script>
+</body>
+</html>

@@ -491,38 +491,34 @@ const PHRASES=[
 ];
 
 // ── SRS (интервальное повторение) ──
-const SRS_INTERVALS = [3, 7, 15, 30]; // повтор через N ответов после 1,2,3,4+ правильных
+const SRS_INTERVALS = [3, 7, 15, 30];
 
-let task = 1;              // текущее задание (1 - слова, 2 - выражения)
-let view = 'quiz';          // текущий вид (quiz или progress)
-let streak1 = 0;            // текущий стрик для задания 1
-let best1 = 0;              // рекорд для задания 1
-let streak2 = 0;            // текущий стрик для задания 2
-let best2 = 0;              // рекорд для задания 2
+let task = 1;
+let view = 'quiz';
+let streak1 = 0;
+let best1 = 0;
+let streak2 = 0;
+let best2 = 0;
 
-// Данные SRS
-let srs = {};               // состояние каждого слова: {s: 'new'|'learning'|'mastered', c: счетчик правильных}
-let queue = [];             // очередь новых слов
-let qpos = 0;               // позиция в очереди
-let cnt = 0;                // общий счетчик ответов (для расчета повторов)
-let pending = [];           // слова, ожидающие повтора: {i: index, d: cnt когда нужно показать}
-let answered = false;       // был ли уже дан ответ на текущий вопрос
-let accentOk = false;       // для задания 2: правильно ли ударение на первом шаге
-let idx = -1;               // индекс текущего слова/фразы
-let isRep = false;          // является ли текущий вопрос повторением
-let autoNextTimer = null;   // таймер для автоперехода
+let srs = {};
+let queue = [];
+let qpos = 0;
+let cnt = 0;
+let pending = [];
+let answered = false;
+let accentOk = false;
+let idx = -1;
+let isRep = false;
+let autoNextTimer = null;
 
-// Ключ для хранения состояния слова
 const K = i => `t${task}|${i}`;
 
-// Получить состояние слова
 function St(i) {
   const k = K(i);
   if (!srs[k]) srs[k] = { s: 'new', c: 0 };
   return srs[k];
 }
 
-// Сохранить данные в localStorage
 function save() {
   try {
     localStorage.setItem('aq9', JSON.stringify(srs));
@@ -531,7 +527,6 @@ function save() {
   } catch (e) {}
 }
 
-// Загрузить данные из localStorage
 function load() {
   try {
     const d = localStorage.getItem('aq9');
@@ -541,12 +536,10 @@ function load() {
   } catch (e) {}
 }
 
-// Получить данные текущего задания
 function data() {
   return task === 1 ? WC : PHRASES;
 }
 
-// Перемешать массив
 function shuf(a) {
   a = [...a];
   for (let i = a.length - 1; i > 0; i--) {
@@ -556,7 +549,6 @@ function shuf(a) {
   return a;
 }
 
-// Построить очередь новых слов
 function buildQ() {
   const n = data().length;
   queue = shuf([...Array(n)].map((_, i) => i));
@@ -565,9 +557,7 @@ function buildQ() {
   pending = [];
 }
 
-// Получить следующий вопрос
 function nxt() {
-  // Сначала проверяем, есть ли слова на повтор
   const due = pending.filter(p => cnt >= p.d);
   if (due.length) {
     due.sort((a, b) => a.d - b.d);
@@ -576,7 +566,6 @@ function nxt() {
     return { index: it.i, rep: true };
   }
   
-  // Если нет повторов, берем новое слово из очереди
   if (qpos >= queue.length) {
     queue = shuf([...Array(data().length)].map((_, i) => i));
     qpos = 0;
@@ -584,7 +573,6 @@ function nxt() {
   return { index: queue[qpos++], rep: false };
 }
 
-// Правильный ответ
 function hit(i) {
   cnt++;
   const st = St(i);
@@ -592,43 +580,35 @@ function hit(i) {
   if (st.s === 'new') {
     st.s = 'learning';
     st.c = 1;
-    // Добавляем в повтор через 3 ответа
     pending.push({ i, d: cnt + SRS_INTERVALS[0] });
   } 
   else if (st.s === 'learning') {
     st.c++;
     if (st.c >= 4) {
       st.s = 'mastered';
-      // Больше не добавляем в повтор
     } else {
-      // Добавляем в повтор с соответствующим интервалом
       pending.push({ i, d: cnt + SRS_INTERVALS[Math.min(st.c - 1, 3)] });
     }
   }
-  // Если mastered - ничего не добавляем
   
   save();
 }
 
-// Неправильный ответ
 function miss(i) {
   const st = St(i);
-  st.c = 0; // сбрасываем счетчик
+  st.c = 0;
   
   if (st.s !== 'new') {
     st.s = 'learning';
   }
   
-  // Добавляем в повтор через 3 ответа
   pending.push({ i, d: cnt + 3 });
   
-  // Сбрасываем стрик для текущего задания
   if (task === 1) streak1 = 0; else streak2 = 0;
   
   save();
 }
 
-// Подсчитать количество слов по статусам
 function counts() {
   const d = data();
   let n = 0, l = 0, m = 0;
@@ -641,12 +621,10 @@ function counts() {
   return { n, l, m, t: d.length };
 }
 
-// Количество слов, ожидающих повторения (больше не используется в UI)
 function dueN() {
   return pending.filter(p => cnt >= p.d).length;
 }
 
-// Обновить верхнюю панель статистики
 function upStats() {
   const c = counts();
   document.getElementById('vstk').textContent = task === 1 ? streak1 : streak2;
@@ -655,7 +633,6 @@ function upStats() {
   document.getElementById('vlrn').textContent = c.l;
 }
 
-// Обновить страницу прогресса
 function upProg() {
   const c = counts();
   document.getElementById('ptn').textContent = c.n;
@@ -667,7 +644,6 @@ function upProg() {
   document.getElementById('pbn').style.width = (c.n / t * 100) + '%';
 }
 
-// Переключить вид (тренажёр/прогресс)
 function showView(v) {
   view = v;
   document.getElementById('sq').classList.toggle('active', v === 'quiz');
@@ -678,7 +654,6 @@ function showView(v) {
   if (v === 'quiz') renderQ();
 }
 
-// Переключить задание
 function switchTask(n) {
   task = n;
   document.getElementById('tab1').classList.toggle('active', n === 1);
@@ -689,7 +664,6 @@ function switchTask(n) {
   upStats();
 }
 
-// Получить HTML для бейджа статуса
 function badge(i, rep) {
   if (rep) return `<span class="qbadge bgrev">🔁 Повтор</span>`;
   const st = St(i);
@@ -698,7 +672,6 @@ function badge(i, rep) {
   return `<span class="qbadge bgnew">🆕 Новое</span>`;
 }
 
-// Эффект конфетти
 function confetti() {
   const wrap = document.getElementById('cfw');
   const colors = ['#6366f1', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#3b82f6'];
@@ -712,7 +685,6 @@ function confetti() {
   }
 }
 
-// Проверка эквивалентности форм с учётом Ё/Е
 function areEquivalent(form1, form2) {
   if (form1 === form2) return true;
   
@@ -727,9 +699,7 @@ function areEquivalent(form1, form2) {
   return false;
 }
 
-// Отрисовать вопрос
 function renderQ() {
-  // Очищаем таймер автоперехода
   if (autoNextTimer) {
     clearTimeout(autoNextTimer);
     autoNextTimer = null;
@@ -744,25 +714,32 @@ function renderQ() {
   upStats();
 }
 
-// Отрисовать слово (задание 1)
 function rWord() {
   const w = WC[idx];
   const isDual = Array.isArray(w.c);
   const cArr = isDual ? w.c : [w.c];
   
-  // Слово для отображения в вопросе (без ударения)
   const cleanWord = pT(cArr[0]);
   const displayWord = cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase();
   
-  // Выбираем случайный правильный вариант
-  const cForm = cArr[~~(Math.random() * cArr.length)];
+  let opts = [];
   
-  // Варианты ответов
-  let opts = [
-    { h: rA(cForm), ok: true, raw: cForm },
-    { h: rA(w.w), ok: false, raw: w.w }
-  ];
-  opts = shuf(opts); // перемешиваем
+  if (isDual) {
+    // Для dual слов: только два правильных варианта, без дистрактора
+    opts = [
+      { h: rA(cArr[0]), ok: true, raw: cArr[0] },
+      { h: rA(cArr[1]), ok: true, raw: cArr[1] }
+    ];
+  } else {
+    // Для обычных слов: один правильный и один неправильный
+    const cForm = cArr[~~(Math.random() * cArr.length)];
+    opts = [
+      { h: rA(cForm), ok: true, raw: cForm },
+      { h: rA(w.w), ok: false, raw: w.w }
+    ];
+  }
+  
+  opts = shuf(opts);
   
   document.getElementById('qc').innerHTML = `
     <div class="qmeta">
@@ -779,7 +756,6 @@ function rWord() {
     <button class="nbtn" id="nb" onclick="renderQ()">Следующее →</button>`;
 }
 
-// Обработка выбора ответа для слова
 function pickW(i, raw, ok) {
   if (answered) return;
   answered = true;
@@ -787,8 +763,8 @@ function pickW(i, raw, ok) {
   const w = WC[idx];
   const cArr = Array.isArray(w.c) ? w.c : [w.c];
   
-  // Проверяем правильность
   let isCorrect = false;
+  
   if (ok) {
     isCorrect = true;
   } else {
@@ -800,10 +776,8 @@ function pickW(i, raw, ok) {
     }
   }
   
-  // Блокируем кнопки
   document.querySelectorAll('.option').forEach(o => o.classList.add('disabled'));
   
-  // Подсвечиваем все правильные варианты
   document.querySelectorAll('.option').forEach(o => {
     const optRaw = o.dataset.raw;
     for (let correctForm of cArr) {
@@ -830,7 +804,6 @@ function pickW(i, raw, ok) {
     pulse();
     if ((task === 1 ? streak1 : streak2) % 5 === 0) confetti();
     
-    // Автопереход через 1 секунду
     autoNextTimer = setTimeout(() => {
       renderQ();
     }, 1000);
@@ -845,7 +818,6 @@ function pickW(i, raw, ok) {
   document.getElementById('nb').classList.add('show');
 }
 
-// Отрисовать фразу (задание 2, шаг 1 - ударение)
 function rPA() {
   const ph = PHRASES[idx];
   let opts = [
@@ -868,7 +840,6 @@ function rPA() {
     <button class="nbtn" id="nb" onclick="rPM()">К значению →</button>`;
 }
 
-// Обработка выбора ударения для фразы
 function pickPA(i, ok) {
   if (answered) return;
   answered = true;
@@ -880,7 +851,6 @@ function pickPA(i, ok) {
   const fb = document.getElementById('fb');
   if (!ok) {
     document.getElementById('o' + i).classList.add('wrong');
-    // Не сбрасываем стрик здесь, только если и значение будет неправильным
     fb.textContent = '✗ Неверно. Правильное ударение выделено.';
     fb.className = 'fb show wfb';
   } else {
@@ -892,7 +862,6 @@ function pickPA(i, ok) {
   document.getElementById('nb').classList.add('show');
 }
 
-// Отрисовать фразу (задание 2, шаг 2 - значение)
 function rPM() {
   const ph = PHRASES[idx];
   let opts = [
@@ -914,7 +883,6 @@ function rPM() {
     <button class="nbtn" id="nb" onclick="renderQ()">Следующее →</button>`;
 }
 
-// Обработка выбора значения для фразы
 function pickPM(i, ok) {
   if (answered) return;
   answered = true;
@@ -925,7 +893,6 @@ function pickPM(i, ok) {
   const fb = document.getElementById('fb');
   
   if (ok && accentOk) {
-    // Всё правильно
     hit(idx);
     streak2++;
     if (streak2 > best2) { best2 = streak2; save(); }
@@ -934,18 +901,15 @@ function pickPM(i, ok) {
     pulse();
     if (streak2 % 5 === 0) confetti();
     
-    // Автопереход через 1 секунду
     autoNextTimer = setTimeout(() => {
       renderQ();
     }, 1000);
   } else if (ok) {
-    // Значение верно, но ударение было неправильным
     fb.textContent = '✓ Значение верно, но ударение было ошибочным.';
     fb.className = 'fb show cfb';
   } else {
-    // Значение неверно
     document.getElementById('o' + i).classList.add('wrong');
-    miss(idx); // сбрасываем прогресс и добавляем в повтор
+    miss(idx);
     fb.textContent = '✗ Неверно. Правильное значение выделено.';
     fb.className = 'fb show wfb';
   }
@@ -954,7 +918,6 @@ function pickPM(i, ok) {
   document.getElementById('nb').classList.add('show');
 }
 
-// Эффект пульсации для стрика
 function pulse() {
   const el = document.getElementById('vstk');
   el.classList.remove('spop');
@@ -962,7 +925,6 @@ function pulse() {
   el.classList.add('spop');
 }
 
-// Инициализация
 load();
 buildQ();
 upStats();

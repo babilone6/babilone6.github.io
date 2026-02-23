@@ -390,7 +390,7 @@ const WORDS=[
 {c:"Таб[У]",               w:"Т[А]бу"},
 // творог — тв[О]р[О]г — два ударных слога!
 {c:["Тв[О]рог","Твор[О]г"], w:"Твор[О]жный", dual:true},
-// тефтели — т[Е]фт[Е]ли — два варианта!
+// тефтели — т[Е]фтели и тефт[Е]ли — два варианта!
 {c:["Т[Е]фтели","Тефт[Е]ли"], w:"Тефтел[И]", dual:true},
 {c:"Фрез[А]",              w:"Фр[Е]за"},
 {c:"Х[А]нжество",          w:"Ханж[Е]ство"},
@@ -509,14 +509,22 @@ const PHRASES=[
 
 // ── SRS ──
 const SRS=[3,7,15,30];
-let task=1,view='quiz',streak=0,best=0;
+let task=1,view='quiz',streak1=0,best1=0,streak2=0,best2=0;
 let srs={},queue=[],qpos=0,cnt=0,pending=[];
 let answered=false,accentOk=false,idx=-1,isRep=false;
+let autoNextTimer=null;
 
 const K=i=>`t${task}|${i}`;
 function St(i){const k=K(i);if(!srs[k])srs[k]={s:'new',c:0};return srs[k];}
-function save(){try{localStorage.setItem('aq9',JSON.stringify(srs));localStorage.setItem('aq9b',best);}catch(e){}}
-function load(){try{const d=localStorage.getItem('aq9');if(d)srs=JSON.parse(d);best=+(localStorage.getItem('aq9b')||0);}catch(e){}}
+function save(){try{localStorage.setItem('aq9',JSON.stringify(srs));localStorage.setItem('aq9b1',best1);localStorage.setItem('aq9b2',best2);}catch(e){}}
+function load(){
+  try{
+    const d=localStorage.getItem('aq9');
+    if(d)srs=JSON.parse(d);
+    best1=+(localStorage.getItem('aq9b1')||0);
+    best2=+(localStorage.getItem('aq9b2')||0);
+  }catch(e){}
+}
 function data(){return task===1?WC:PHRASES;}
 function shuf(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function buildQ(){const n=data().length;queue=shuf([...Array(n)].map((_,i)=>i));qpos=0;cnt=0;pending=[];}
@@ -533,14 +541,14 @@ function hit(i){
   else pending.push({i,d:cnt+50});
   save();
 }
-function miss(i){const st=St(i);st.c=0;if(st.s!=='new')st.s='learning';pending.push({i,d:cnt+3});streak=0;save();}
+function miss(i){const st=St(i);st.c=0;if(st.s!=='new')st.s='learning';pending.push({i,d:cnt+3});if(task===1) streak1=0; else streak2=0;save();}
 function counts(){const d=data();let n=0,l=0,m=0;d.forEach((_,i)=>{const s=St(i).s;s==='mastered'?m++:s==='learning'?l++:n++;});return{n,l,m,t:d.length};}
 function dueN(){return pending.filter(p=>cnt>=p.d).length;}
 
 function upStats(){
   const c=counts();
-  document.getElementById('vstk').textContent=streak;
-  document.getElementById('vbst').textContent=best;
+  document.getElementById('vstk').textContent=task===1?streak1:streak2;
+  document.getElementById('vbst').textContent=task===1?best1:best2;
   document.getElementById('vnew').textContent=c.n;
   document.getElementById('vlrn').textContent=c.l;
   document.getElementById('vdue').textContent=dueN();
@@ -568,8 +576,9 @@ function switchTask(n){
   task=n;
   document.getElementById('tab1').classList.toggle('active',n===1);
   document.getElementById('tab2').classList.toggle('active',n===2);
-  streak=0;buildQ();upStats();
+  buildQ();answered=false;
   if(view==='quiz')renderQ();else upProg();
+  upStats();
 }
 function badge(i,rep){
   if(rep)return`<span class="qbadge bgrev">🔁 Повтор</span>`;
@@ -580,7 +589,7 @@ function badge(i,rep){
 }
 function progBar(){
   const c=counts();
-  return`<div class="mprog"><div class="mfill" style="width:${Math.round(c.m/c.t*100)}%"></div></div>`;
+  return`<div class="mprog"><div class="mfill" style="width:${Math.round((c.m+c.l/2)/c.t*100)}%"></div></div>`;
 }
 function confetti(){
   const wrap=document.getElementById('cfw');
@@ -593,13 +602,6 @@ function confetti(){
     wrap.appendChild(el);
     setTimeout(()=>el.remove(),2000);
   }
-}
-
-// ════════════════════════════════════════
-// Функция для проверки, является ли буква ударной Ё
-// ════════════════════════════════════════
-function isStressedYo(form) {
-  return form.includes('[Ё]');
 }
 
 // ════════════════════════════════════════
@@ -624,7 +626,17 @@ function areEquivalent(form1, form2) {
 }
 
 function renderQ(){
-  answered=false;const nx=nxt();idx=nx.index;isRep=nx.rep;
+  // Очищаем таймер автоперехода
+  if (autoNextTimer) {
+    clearTimeout(autoNextTimer);
+    autoNextTimer = null;
+  }
+  
+  answered=false;
+  const nx=nxt();
+  idx=nx.index;
+  isRep=nx.rep;
+  
   task===1?rWord():rPA();
   upStats();
 }
@@ -642,13 +654,13 @@ function rWord(){
   const cForm=cArr[~~(Math.random()*cArr.length)];
   
   // Создаем варианты ответов
-  const opts = [
+  let opts = [
     {h: rA(cForm), ok: true, raw: cForm},
     {h: rA(w.w), ok: false, raw: w.w}
   ];
   
-  // Перемешиваем
-  shuf(opts);
+  // Перемешиваем, чтобы правильный ответ не всегда был первым
+  opts = shuf(opts);
   
   const c=counts();
   
@@ -705,12 +717,22 @@ function pickW(i, raw, ok){
   
   if (isCorrect) {
     hit(idx);
-    streak++;
-    if (streak > best) { best = streak; save(); }
+    if (task === 1) {
+      streak1++;
+      if (streak1 > best1) { best1 = streak1; save(); }
+    } else {
+      streak2++;
+      if (streak2 > best2) { best2 = streak2; save(); }
+    }
     fb.textContent = '✓ Правильно!';
     fb.className = 'fb show cfb';
     pulse();
-    if (streak % 5 === 0) confetti();
+    if ((task===1?streak1:streak2) % 5 === 0) confetti();
+    
+    // Автопереход через 1 секунду
+    autoNextTimer = setTimeout(() => {
+      renderQ();
+    }, 1000);
   } else {
     document.getElementById('o' + i).classList.add('wrong');
     miss(idx);
@@ -723,8 +745,14 @@ function pickW(i, raw, ok){
 }
 function rPA(){
   const ph=PHRASES[idx];
-  const opts=shuf([{h:rA(ph.ac),ok:true},{h:rA(ph.aw),ok:false}]);
+  let opts = [
+    {h: rA(ph.ac), ok: true},
+    {h: rA(ph.aw), ok: false}
+  ];
+  opts = shuf(opts);
+  
   const c=counts();
+  
   document.getElementById('qc').innerHTML=`
     <div class="qmeta"><span class="qlbl">${c.m}/${c.t} выучено</span>${badge(idx,isRep)}</div>
     ${progBar()}
@@ -742,14 +770,28 @@ function pickPA(i,ok){
   document.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
   document.querySelectorAll('.option').forEach(o=>{if(o.dataset.ok==='true')o.classList.add('correct');});
   const fb=document.getElementById('fb');
-  if(!ok){document.getElementById('o'+i).classList.add('wrong');streak=0;fb.textContent='✗ Неверно. Правильное ударение выделено.';fb.className='fb show wfb';}
-  else{fb.textContent='✓ Правильно! Теперь определите значение.';fb.className='fb show cfb';}
-  upStats();document.getElementById('nb').classList.add('show');
+  if(!ok){
+    document.getElementById('o'+i).classList.add('wrong');
+    streak2=0;
+    fb.textContent='✗ Неверно. Правильное ударение выделено.';
+    fb.className='fb show wfb';
+  } else {
+    fb.textContent='✓ Правильно! Теперь определите значение.';
+    fb.className='fb show cfb';
+  }
+  upStats();
+  document.getElementById('nb').classList.add('show');
 }
 function rPM(){
   const ph=PHRASES[idx];
-  const opts=shuf([{t:ph.mc,ok:true},{t:ph.mw1,ok:false},{t:ph.mw2,ok:false}]);
+  let opts = [
+    {t:ph.mc, ok:true},
+    {t:ph.mw1, ok:false},
+    {t:ph.mw2, ok:false}
+  ];
+  opts = shuf(opts);
   answered=false;
+  
   document.getElementById('qc').innerHTML=`
     <div class="pbadge">Шаг 2 — Значение</div>
     <div class="hint">Что означает выражение:</div>
@@ -765,17 +807,31 @@ function pickPM(i,ok){
   document.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
   document.querySelectorAll('.option').forEach(o=>{if(o.dataset.ok==='true')o.classList.add('correct');});
   const fb=document.getElementById('fb');
+  
   if(ok&&accentOk){
-    hit(idx);streak++;if(streak>best){best=streak;save();}
-    fb.textContent='✓ Верно! И ударение, и значение правильные.';fb.className='fb show cfb';
-    pulse();if(streak%5===0)confetti();
+    hit(idx);
+    streak2++;
+    if(streak2>best2){best2=streak2;save();}
+    fb.textContent='✓ Верно! И ударение, и значение правильные.';
+    fb.className='fb show cfb';
+    pulse();
+    if(streak2%5===0)confetti();
+    
+    // Автопереход через 1 секунду
+    autoNextTimer = setTimeout(() => {
+      renderQ();
+    }, 1000);
   }else if(ok){
-    fb.textContent='✓ Значение верно, но ударение было ошибочным.';fb.className='fb show cfb';
+    fb.textContent='✓ Значение верно, но ударение было ошибочным.';
+    fb.className='fb show cfb';
   }else{
-    document.getElementById('o'+i).classList.add('wrong');miss(idx);
-    fb.textContent='✗ Неверно. Правильное значение выделено.';fb.className='fb show wfb';
+    document.getElementById('o'+i).classList.add('wrong');
+    miss(idx);
+    fb.textContent='✗ Неверно. Правильное значение выделено.';
+    fb.className='fb show wfb';
   }
-  upStats();document.getElementById('nb').classList.add('show');
+  upStats();
+  document.getElementById('nb').classList.add('show');
 }
 function pulse(){
   const el=document.getElementById('vstk');

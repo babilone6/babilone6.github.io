@@ -40,12 +40,12 @@ header p{color:var(--muted);font-size:.72rem;margin-top:5px;letter-spacing:2px;t
   font-family:'Nunito',sans-serif;font-weight:700;font-size:.67rem;cursor:pointer;transition:all .2s;text-transform:uppercase;}
 .sub-tab.active{background:rgba(99,102,241,.09);border-color:var(--accent);color:var(--accent);}
 .sub-tab:hover:not(.active){border-color:var(--accent);color:var(--accent);}
-.sbar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 18px;animation:fup .5s .2s both;}
+.sbar{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0 18px;animation:fup .5s .2s both;}
 .sbox{background:var(--surface);border-radius:16px;padding:12px 5px;text-align:center;border:1.5px solid var(--border);
   box-shadow:0 2px 10px rgba(99,102,241,.07);transition:transform .2s;}
 .sbox:hover{transform:translateY(-2px);}
 .sv{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;line-height:1;}
-.sv-stk{color:#f97316;}.sv-best{color:#6366f1;}.sv-new{color:#6366f1;}.sv-lrn{color:#f59e0b;}
+.sv-stk{color:#f97316;}.sv-best{color:#6366f1;}.sv-new{color:#6366f1;}.sv-lrn{color:#f59e0b;}.sv-total{color:#64748b;}
 .sl{font-size:.51rem;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;margin-top:3px;font-weight:700;}
 .prog-card{background:var(--surface);border-radius:24px;padding:26px;border:1.5px solid var(--border);
   box-shadow:0 4px 24px rgba(99,102,241,.1);margin-bottom:14px;animation:fup .4s both;}
@@ -145,8 +145,8 @@ header p{color:var(--muted);font-size:.72rem;margin-top:5px;letter-spacing:2px;t
 @keyframes spop{0%{transform:scale(1)}45%{transform:scale(1.5)}75%{transform:scale(.9)}100%{transform:scale(1)}}
 .spop{animation:spop .4s cubic-bezier(.34,1.56,.64,1);}
 @media(max-width:520px){
-  .sbar{grid-template-columns:repeat(4,1fr);}
-  .sbox{display:block;}
+  .sbar{grid-template-columns:repeat(3,1fr);}
+  .sbox:nth-child(4),.sbox:nth-child(5){display:none;}
   .option{font-size:1.08rem;padding:12px 13px;}
   .bword{font-size:clamp(1.5rem,7vw,2.2rem);}
   .quiz-card{padding:20px 14px;}
@@ -174,6 +174,7 @@ header p{color:var(--muted);font-size:.72rem;margin-top:5px;letter-spacing:2px;t
     <div class="sbox"><div class="sv sv-best" id="vbst">0</div><div class="sl">🏆 Рекорд</div></div>
     <div class="sbox"><div class="sv sv-new" id="vnew">—</div><div class="sl">🆕 Новых</div></div>
     <div class="sbox"><div class="sv sv-lrn" id="vlrn">—</div><div class="sl">📖 Изучаемые</div></div>
+    <div class="sbox"><div class="sv sv-total" id="vtotal">0</div><div class="sl">📊 Всего ответов</div></div>
   </div>
   <div id="vp" style="display:none">
     <div class="prog-card">
@@ -499,6 +500,7 @@ let streak1 = 0;
 let best1 = 0;
 let streak2 = 0;
 let best2 = 0;
+let totalAnswers = 0; // Общий счётчик всех ответов (правильных + неправильных)
 
 let srs = {};
 let queue = [];
@@ -524,6 +526,7 @@ function save() {
     localStorage.setItem('aq9', JSON.stringify(srs));
     localStorage.setItem('aq9b1', best1);
     localStorage.setItem('aq9b2', best2);
+    localStorage.setItem('aq9total', totalAnswers);
   } catch (e) {}
 }
 
@@ -533,6 +536,7 @@ function load() {
     if (d) srs = JSON.parse(d);
     best1 = +(localStorage.getItem('aq9b1') || 0);
     best2 = +(localStorage.getItem('aq9b2') || 0);
+    totalAnswers = +(localStorage.getItem('aq9total') || 0);
   } catch (e) {}
 }
 
@@ -575,6 +579,7 @@ function nxt() {
 
 function hit(i) {
   cnt++;
+  totalAnswers++;
   const st = St(i);
   
   if (st.s === 'new') {
@@ -595,6 +600,7 @@ function hit(i) {
 }
 
 function miss(i) {
+  totalAnswers++;
   const st = St(i);
   st.c = 0;
   
@@ -631,6 +637,7 @@ function upStats() {
   document.getElementById('vbst').textContent = task === 1 ? best1 : best2;
   document.getElementById('vnew').textContent = c.n;
   document.getElementById('vlrn').textContent = c.l;
+  document.getElementById('vtotal').textContent = totalAnswers;
 }
 
 function upProg() {
@@ -851,6 +858,7 @@ function pickPA(i, ok) {
   const fb = document.getElementById('fb');
   if (!ok) {
     document.getElementById('o' + i).classList.add('wrong');
+    totalAnswers++;
     fb.textContent = '✗ Неверно. Правильное ударение выделено.';
     fb.className = 'fb show wfb';
   } else {
@@ -905,6 +913,7 @@ function pickPM(i, ok) {
       renderQ();
     }, 1000);
   } else if (ok) {
+    totalAnswers++;
     fb.textContent = '✓ Значение верно, но ударение было ошибочным.';
     fb.className = 'fb show cfb';
   } else {

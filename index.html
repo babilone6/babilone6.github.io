@@ -198,7 +198,8 @@ header p{color:var(--muted);font-size:.72rem;margin-top:5px;letter-spacing:2px;t
         📖 <span style="color:#f59e0b">Изучение (1–3/4)</span> — повторы через 3 → 7 → 15 ответов<br>
         ✅ <span style="color:#10b981">Выучено</span> — 4 верных ответа на всех интервалах<br>
         ❌ Ошибка → прогресс сбрасывается, повтор через 3 ответа<br>
-        💡 Два варианта ударения — оба считаются правильными!
+        💡 Два варианта ударения — оба считаются правильными!<br>
+        💡 Буква Ё всегда ударная — варианты с Е и Ё в том же месте принимаются.
       </div>
     </div>
   </div>
@@ -594,6 +595,34 @@ function confetti(){
   }
 }
 
+// ════════════════════════════════════════
+// Функция для проверки, является ли буква ударной Ё
+// ════════════════════════════════════════
+function isStressedYo(form) {
+  return form.includes('[Ё]');
+}
+
+// ════════════════════════════════════════
+// Функция для сравнения двух форм с учётом Ё/Е
+// ════════════════════════════════════════
+function areEquivalent(form1, form2) {
+  // Если формы совпадают точно
+  if (form1 === form2) return true;
+  
+  // Проверяем, не являются ли формы вариантами с Ё и Е
+  const withoutBrackets1 = form1.replace(/\[|\]/g, '');
+  const withoutBrackets2 = form2.replace(/\[|\]/g, '');
+  
+  // Если после удаления скобок строки совпадают, значит отличаются только скобками
+  if (withoutBrackets1 === withoutBrackets2) return true;
+  
+  // Проверяем замену Ё на Е и наоборот
+  const normalize = (s) => s.replace(/Ё/g, 'Е').replace(/ё/g, 'е');
+  if (normalize(withoutBrackets1) === normalize(withoutBrackets2)) return true;
+  
+  return false;
+}
+
 function renderQ(){
   answered=false;const nx=nxt();idx=nx.index;isRep=nx.rep;
   task===1?rWord():rPA();
@@ -603,39 +632,94 @@ function rWord(){
   const w=WC[idx];
   const isDual=Array.isArray(w.c);
   const cArr=isDual?w.c:[w.c];
-  // Для отображения слова в вопросе используем форму без скобок, но в оригинальном регистре (с большой буквы, если нужно)
-  const displayForm = pT(cArr[0]); // первая буква остаётся заглавной (как в словаре)
+  
+  // Показываем слово без скобок и без выделения ударения
+  // Просто удаляем скобки и приводим к формату "Первая буква заглавная, остальные строчные"
+  const cleanWord = pT(cArr[0]); // убираем скобки
+  const displayWord = cleanWord.charAt(0).toUpperCase() + cleanWord.slice(1).toLowerCase();
+  
+  // Выбираем случайный правильный вариант для отображения в ответах
   const cForm=cArr[~~(Math.random()*cArr.length)];
-  const opts=shuf([{h:rA(cForm),ok:true},{h:rA(w.w),ok:false}]);
+  
+  // Создаем варианты ответов
+  const opts = [
+    {h: rA(cForm), ok: true, raw: cForm},
+    {h: rA(w.w), ok: false, raw: w.w}
+  ];
+  
+  // Перемешиваем
+  shuf(opts);
+  
   const c=counts();
+  
   document.getElementById('qc').innerHTML=`
     <div class="qmeta"><span class="qlbl">${c.m}/${c.t} выучено</span>${badge(idx,isRep)}</div>
     ${progBar()}
     <div class="hint">Выберите правильное ударение</div>
     ${isDual?`<div class="dual-note">💡 Допустимы оба варианта ударения</div>`:''}
     ${w.note?`<div class="wnote">${w.note}</div>`:''}
-    <div class="wdisp"><span class="bword">${displayForm}</span></div>
+    <div class="wdisp"><span class="bword">${displayWord}</span></div>
     <div class="opts">
-      ${opts.map((o,i)=>`<button class="option" id="o${i}" data-ok="${o.ok}" onclick="pickW(${i},${o.ok})">${o.h}</button>`).join('')}
+      ${opts.map((o,i) => `<button class="option" id="o${i}" data-raw="${o.raw}" data-ok="${o.ok}" onclick="pickW(${i}, '${o.raw}', ${o.ok})">${o.h}</button>`).join('')}
     </div>
     <div class="fb" id="fb"></div>
     <button class="nbtn" id="nb" onclick="renderQ()">Следующее →</button>`;
 }
-function pickW(i,ok){
-  if(answered)return;answered=true;
-  document.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
-  document.querySelectorAll('.option').forEach(o=>{if(o.dataset.ok==='true')o.classList.add('correct');});
-  const fb=document.getElementById('fb');
-  if(ok){
-    hit(idx);streak++;if(streak>best){best=streak;save();}
-    fb.textContent='✓ Правильно!';fb.className='fb show cfb';
-    pulse();if(streak%5===0)confetti();
-  }else{
-    document.getElementById('o'+i).classList.add('wrong');
-    miss(idx);
-    fb.textContent='✗ Неверно. Правильный ответ выделен. Повтор через 3 ответа.';fb.className='fb show wfb';
+function pickW(i, raw, ok){
+  if(answered) return;
+  answered = true;
+  
+  const w = WC[idx];
+  const cArr = Array.isArray(w.c) ? w.c : [w.c];
+  
+  // Проверяем, является ли выбранный вариант правильным с учётом Ё/Е
+  let isCorrect = false;
+  
+  // Если в данных вариант помечен как правильный
+  if (ok) {
+    isCorrect = true;
+  } else {
+    // Проверяем, не является ли неправильный вариант эквивалентным правильному из-за Ё/Е
+    for (let correctForm of cArr) {
+      if (areEquivalent(raw, correctForm)) {
+        isCorrect = true;
+        break;
+      }
+    }
   }
-  upStats();document.getElementById('nb').classList.add('show');
+  
+  document.querySelectorAll('.option').forEach(o => o.classList.add('disabled'));
+  
+  // Подсвечиваем все правильные варианты
+  document.querySelectorAll('.option').forEach(o => {
+    const optRaw = o.dataset.raw;
+    for (let correctForm of cArr) {
+      if (areEquivalent(optRaw, correctForm)) {
+        o.classList.add('correct');
+        break;
+      }
+    }
+  });
+  
+  const fb = document.getElementById('fb');
+  
+  if (isCorrect) {
+    hit(idx);
+    streak++;
+    if (streak > best) { best = streak; save(); }
+    fb.textContent = '✓ Правильно!';
+    fb.className = 'fb show cfb';
+    pulse();
+    if (streak % 5 === 0) confetti();
+  } else {
+    document.getElementById('o' + i).classList.add('wrong');
+    miss(idx);
+    fb.textContent = '✗ Неверно. Правильный ответ выделен. Повтор через 3 ответа.';
+    fb.className = 'fb show wfb';
+  }
+  
+  upStats();
+  document.getElementById('nb').classList.add('show');
 }
 function rPA(){
   const ph=PHRASES[idx];

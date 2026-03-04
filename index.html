@@ -244,7 +244,7 @@ function pT(s){
 // WORD DATA – Работа №1 (старые слова + выражения)
 // ════════════════════════════════════════
 const WORK1_WORDS = [
-// СПИСОК 1 (бывшие)
+// СПИСОК 1
 {c:"[А]вгустовский",       w:"Август[О]вский"},
 {c:"Агрон[О]мия",          w:"Агроном[И]я"},
 {c:"Алког[О]ль",           w:"[А]лкоголь"},
@@ -293,7 +293,7 @@ const WORK1_WORDS = [
 {c:"Юр[О]дивый",           w:"Юрод[И]вый"},
 {c:"Духовн[И]к",           w:"Д[У]ховник"},
 {c:"Т[А]йная в[Е]черя",    w:"Т[А]йная вечер[Я]"},
-// СПИСОК 2 (бывшие)
+// СПИСОК 2
 {c:"Алфав[И]т",            w:"[А]лфавит"},
 {c:"Асб[Е]ст",             w:"[А]сбест"},
 {c:"Быти[Е]",              w:"Б[Ы]тие"},
@@ -359,7 +359,7 @@ const WORK1_WORDS = [
 {c:"Герб[Ы]",              w:"Г[Е]рбы"},
 {c:"Мин[У]т",              w:"М[И]нут"},
 {c:"Д[И]скурс",            w:"Диск[У]рс"},
-// СПИСОК 3 (бывшие)
+// СПИСОК 3
 {c:"Автон[И]м",            w:"Авт[О]ним"},
 {c:"Аг[Е]нт",              w:"[А]гент"},
 {c:"Арг[О]",               w:"[А]рго"},
@@ -522,7 +522,7 @@ const WORK1_PHRASES = [
 ];
 
 // ════════════════════════════════════════
-// WORD DATA – Работа №2 (новые слова)
+// WORD DATA – Работа №2 (новые слова) - ВАША ВЕРСИЯ СОХРАНЕНА
 // ════════════════════════════════════════
 const WORK2_WORDS = [
 // 1-й слог
@@ -907,35 +907,44 @@ function St(i) {
 
 function save() {
   try {
-    localStorage.setItem('accent_srs', JSON.stringify(srs));
-    localStorage.setItem('accent_best', best);
-    localStorage.setItem('accent_total', totalAnswers);
+    // Сохраняем в новый ключ
+    localStorage.setItem('accent_srs_v2', JSON.stringify(srs));
+    localStorage.setItem('accent_best_v2', best);
+    localStorage.setItem('accent_total_v2', totalAnswers);
   } catch (e) {}
 }
 
 function load() {
   try {
-    // Сначала загружаем старые данные
-    const oldData = localStorage.getItem('aq9');
-    if (oldData) {
-      const oldSrs = JSON.parse(oldData);
-      // Преобразуем старые ключи (t0|i) в новые (w1t1|i, w1t2|i)
-      for (let key in oldSrs) {
-        if (key.startsWith('t0|')) {
-          // Для работы 1, задания 1 (слова)
-          const newKey = 'w1t1' + key.substring(3);
-          srs[newKey] = oldSrs[key];
-        } else if (key.startsWith('t1|')) {
-          // Для работы 1, задания 2 (выражения)
-          const newKey = 'w1t2' + key.substring(3);
-          srs[newKey] = oldSrs[key];
+    // Сначала пробуем загрузить новые данные
+    const newData = localStorage.getItem('accent_srs_v2');
+    if (newData) {
+      srs = JSON.parse(newData);
+      best = +(localStorage.getItem('accent_best_v2') || 0);
+      totalAnswers = +(localStorage.getItem('accent_total_v2') || 0);
+    } else {
+      // Если новых нет, загружаем старые и конвертируем
+      const oldData = localStorage.getItem('aq9');
+      if (oldData) {
+        const oldSrs = JSON.parse(oldData);
+        // Преобразуем старые ключи в новые
+        for (let key in oldSrs) {
+          if (key.startsWith('t0|')) {
+            const newKey = 'w1t1' + key.substring(3);
+            srs[newKey] = oldSrs[key];
+          } else if (key.startsWith('t1|')) {
+            const newKey = 'w1t2' + key.substring(3);
+            srs[newKey] = oldSrs[key];
+          }
         }
+        // Загружаем старые рекорды
+        best = +(localStorage.getItem('aq9b') || 0);
+        totalAnswers = +(localStorage.getItem('aq9total') || 0);
+        
+        // Сразу сохраняем в новом формате
+        save();
       }
     }
-    
-    // Загружаем рекорды
-    best = +(localStorage.getItem('aq9b') || 0);
-    totalAnswers = +(localStorage.getItem('aq9total') || 0);
   } catch (e) {}
 }
 

@@ -1187,7 +1187,7 @@ function pickWord(i, raw, ok) {
     fb.className = 'fb show cfb';
     pulse();
     if (streak % 5 === 0) confetti();
-    autoNextTimer = setTimeout(() => renderQ(), 1000);
+    autoNextTimer = setTimeout(() => renderQ(), 400);
   } else {
     document.getElementById('o'+i).classList.add('wrong');
     miss(idx);
